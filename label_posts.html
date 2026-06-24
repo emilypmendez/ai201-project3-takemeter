@@ -1,0 +1,207 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:#f9f9f9;padding:2rem 1rem}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+#app{max-width:700px;margin:0 auto}
+#upload-screen{text-align:center}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;padding-bottom:1rem;border-bottom:1px solid var(--color-border-secondary)}
+.title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.stats{display:flex;gap:.5rem;flex-wrap:wrap}
+.stat{font-size:12px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.stat span{font-weight:500;color:var(--color-text-primary)}
+.progress-row{margin-bottom:1.25rem}
+.progress-bar{height:4px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width .3s}
+.progress-label{font-size:12px;color:var(--color-text-tertiary);margin-top:4px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-primary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.post-num{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:.5rem}
+.post-text{font-size:14px;line-height:1.65;color:var(--color-text-primary);margin-bottom:1rem;padding:.75rem 1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid var(--color-border-secondary)}
+.label-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.label-btn{font-size:12px;padding:5px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s;font-family:var(--font-sans)}
+.label-btn:hover{background:var(--color-background-secondary)}
+.label-btn.active-grounded{background:#E1F5EE;border-color:#0F6E56;color:#085041;font-weight:500}
+.label-btn.active-opinionated{background:#EEEDFE;border-color:#534AB7;color:#3C3489;font-weight:500}
+.label-btn.active-reactive{background:#FAEEDA;border-color:#854F0B;color:#633806;font-weight:500}
+.label-btn.active-noise{background:#F1EFE8;border-color:#5F5E5A;color:#444441;font-weight:500}
+.note-input{width:100%;font-size:13px;padding:.5rem .75rem;border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);resize:none;line-height:1.5;box-shadow:inset 0 1px 2px rgba(0,0,0,.05)}
+.note-input:focus{outline:none;border-color:var(--color-border-primary);box-shadow:inset 0 1px 2px rgba(0,0,0,.05), 0 0 0 2px var(--color-border-primary)}
+.note-input::placeholder{color:var(--color-text-tertiary)}
+@keyframes slideIn{from{opacity:.7;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:slideIn .2s ease-out}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem}
+.nav-btn{font-size:13px;padding:6px 16px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);font-family:var(--font-sans);transition:all .15s}
+.nav-btn:hover:not(:disabled){background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed}
+.nav-btn:not(:disabled){border-color:var(--color-border-primary);color:var(--color-text-primary);font-weight:500}
+.export-btn{font-size:13px;padding:6px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-weight:500}
+.export-btn:hover{background:var(--color-background-secondary)}
+.loading-state{text-align:center;padding:3rem 1rem;color:var(--color-text-secondary);font-size:14px}
+.upload-area{border:2px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:3rem 2rem;text-align:center;background:var(--color-background-secondary);max-width:500px;margin:0 auto}
+.upload-area input{display:none}
+.upload-btn{font-size:13px;padding:8px 20px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-weight:500}
+.upload-btn:hover{background:var(--color-background-secondary)}
+.dist-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.dist-pill{font-size:12px;padding:3px 12px;border-radius:20px}
+.d-grounded{background:#E1F5EE;color:#085041}
+.d-opinionated{background:#EEEDFE;color:#3C3489}
+.d-reactive{background:#FAEEDA;color:#633806}
+.d-noise{background:#F1EFE8;color:#444441}
+.section-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-tertiary);margin-bottom:.4rem}
+.definition{font-size:12px;padding:.75rem;border-radius:var(--border-radius-md);margin-top:.5rem;line-height:1.5;border-left:3px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);animation:slideIn .2s ease-out}
+.definition.def-grounded{border-left-color:#0F6E56;background:#E1F5EE}
+.definition.def-opinionated{border-left-color:#534AB7;background:#EEEDFE}
+.definition.def-reactive{border-left-color:#854F0B;background:#FAEEDA}
+.definition.def-noise{border-left-color:#5F5E5A;background:#F1EFE8}
+</style>
+
+<h2 class="sr-only">TakeMeter annotation tool — label r/MacOS posts and export to CSV</h2>
+
+<div id="app">
+  <div id="upload-screen" style="display:block">
+    <div class="top-bar">
+      <span class="title">TakeMeter annotation</span>
+    </div>
+    <div style="max-width:600px;margin:0 auto">
+      <div class="upload-area">
+        <div style="margin-bottom:1rem">
+          <p style="color:var(--color-text-primary);font-weight:500;margin-bottom:.5rem">Upload posts.json</p>
+          <p style="color:var(--color-text-secondary);font-size:13px">Select your posts.json file from the scraper</p>
+        </div>
+        <input id="file-input" type="file" accept=".json" onchange="loadPosts(this.files[0])">
+        <button class="upload-btn" onclick="document.getElementById('file-input').click()">Choose File</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="main" style="display:none">
+    <div class="top-bar">
+      <span class="title">TakeMeter annotation</span>
+      <div class="stats">
+        <div class="stat">Labeled <span id="s-reviewed">0</span> / <span id="s-total">0</span></div>
+      </div>
+      <button class="export-btn" onclick="exportCSV()">Download CSV</button>
+    </div>
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label">0 of 0 labeled</div>
+    </div>
+    <div class="dist-row" id="dist-row"></div>
+    <div id="card-area" style="margin-bottom:1.5rem"></div>
+    <div class="nav-row">
+      <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>Previous</button>
+      <span style="font-size:13px;color:var(--color-text-tertiary)" id="nav-label">1 / 0</span>
+      <button class="nav-btn" id="btn-next" onclick="go(1)">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LABELS = ['grounded','opinionated','reactive','noise'];
+const DEFINITIONS = {
+  grounded: 'The post makes a specific, verifiable claim — naming a macOS version, tool, setting, or reproducible behavior — and uses that specificity to support its point.',
+  opinionated: 'A confident opinion or preference stated without specific, verifiable support. Bold assertions, taste preferences, generalizations.',
+  reactive: 'The post\'s primary move is to solicit opinions, experiences, or recommendations from the community. The poster does not take a substantive position.',
+  noise: 'No substantive content — context-free screenshots, vague complaints, or posts so generic they could apply to any software.'
+};
+
+let posts = [];
+let labels = [];
+let notes = [];
+let reviewed = new Set();
+let idx = 0;
+
+async function loadPosts(file) {
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (!Array.isArray(data) || data.length === 0) {
+      alert('Invalid JSON: must be an array of posts');
+      return;
+    }
+
+    posts = data;
+    labels = new Array(posts.length).fill('opinionated');
+    notes = new Array(posts.length).fill('');
+    reviewed = new Set();
+    idx = 0;
+
+    document.getElementById('upload-screen').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    document.getElementById('s-total').textContent = posts.length;
+    render();
+  } catch (e) {
+    alert('Error loading file: ' + e.message);
+  }
+}
+
+function render() {
+  reviewed.add(idx);
+  updateStats();
+  const post = posts[idx];
+  const lbl = labels[idx];
+
+  const btnClass = l => `label-btn${lbl===l?' active-'+l:''}`;
+
+  document.getElementById('card-area').innerHTML = `
+    <div class="card">
+      <div class="post-num">Post ${post.id} of ${posts.length}</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">${escHtml(post.title)}</div>
+        ${post.text ? `<div class="post-text">${escHtml(post.text)}</div>` : ''}
+      </div>
+      <div class="section-label">Label</div>
+      <div class="label-row">
+        ${LABELS.map(l=>`<button class="${btnClass(l)}" onclick="setLabel(${idx},'${l}')">${l}</button>`).join('')}
+      </div>
+      ${lbl ? `<div class="definition def-${lbl}">${DEFINITIONS[lbl]}</div>` : ''}
+      <div class="section-label" style="margin-top:1rem">Note (optional)</div>
+      <textarea class="note-input" rows="2" placeholder="e.g. 'borderline grounded/opinionated'" onchange="notes[${idx}]=this.value">${escHtml(notes[idx]||'')}</textarea>
+    </div>`;
+
+  document.getElementById('nav-label').textContent = `${idx+1} / ${posts.length}`;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === posts.length - 1;
+  updateDist();
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function setLabel(i, l) {
+  labels[i] = l;
+  render();
+}
+
+function go(dir) {
+  idx = Math.max(0, Math.min(posts.length - 1, idx + dir));
+  render();
+}
+
+function updateStats() {
+  document.getElementById('s-reviewed').textContent = reviewed.size;
+  const pct = Math.round(reviewed.size/posts.length*100);
+  document.getElementById('prog').style.width = pct+'%';
+  document.getElementById('prog-label').textContent = `${reviewed.size} of ${posts.length} labeled`;
+}
+
+function updateDist() {
+  const counts = {grounded:0,opinionated:0,reactive:0,noise:0};
+  labels.forEach(l=>{ if(counts[l]!==undefined) counts[l]++; });
+  document.getElementById('dist-row').innerHTML = LABELS.map(l=>
+    `<span class="dist-pill d-${l}">${l}: ${counts[l]}</span>`
+  ).join('');
+}
+
+function exportCSV() {
+  const rows = ['id,text,label,notes'];
+  posts.forEach((p,i)=>{
+    const esc = s => '"' + String(s).replace(/"/g,'""') + '"';
+    rows.push([esc(p.id), esc(p.text), esc(labels[i]), esc(notes[i]||'')].join(','));
+  });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'takemeter_annotations.csv';
+  a.click();
+}
+</script>
